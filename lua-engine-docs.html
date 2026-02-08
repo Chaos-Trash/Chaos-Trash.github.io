@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lua Engine Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/lua.min.js"></script>
+    <style>
+        :root {
+            --bg-main: #f8f9fa;
+            --bg-white: #ffffff;
+            --bg-sidebar: #1e2528;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --green-primary: #10b981;
+            --green-dark: #059669;
+            --green-light: #d1fae5;
+            --green-accent: #6ee7b7;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.7;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            padding: 2rem 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--green-accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .logo p {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-title {
+            padding: 0 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-list a {
+            display: block;
+            padding: 0.625rem 2rem;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-list a:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--green-accent);
+            border-left-color: var(--green-primary);
+        }
+
+        .nav-list a.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--green-accent);
+            border-left-color: var(--green-primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: 1200px;
+        }
+
+        header {
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 3rem 0 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 2rem 0 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* API Cards */
+        .api-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .api-card h3 {
+            margin-top: 0;
+            color: var(--green-dark);
+        }
+
+        /* Function Signature */
+        .function-signature {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9375rem;
+            color: var(--green-dark);
+            font-weight: 500;
+        }
+
+        /* Parameters */
+        .params {
+            margin: 1.5rem 0;
+        }
+
+        .param {
+            margin: 1rem 0;
+            padding-left: 1.25rem;
+            border-left: 3px solid var(--green-light);
+        }
+
+        .param-name {
+            color: var(--green-dark);
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .param-type {
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        /* Returns */
+        .returns {
+            background: var(--green-light);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--green-primary);
+        }
+
+        .returns strong {
+            color: var(--green-dark);
+            font-weight: 600;
+        }
+
+        /* Warning Box */
+        .warning {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-left: 4px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            color: #92400e;
+        }
+
+        .warning::before {
+            content: '⚠️ ';
+            font-size: 1.125rem;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #282c34;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        pre code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            background: var(--bg-main);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: var(--green-dark);
+            font-weight: 500;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* Syntax Highlighting Customization */
+        .hljs {
+            background: #282c34;
+            color: #abb2bf;
+        }
+
+        .hljs-comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .hljs-keyword,
+        .hljs-built_in {
+            color: #6ee7b7;
+        }
+
+        .hljs-string {
+            color: #98c379;
+        }
+
+        .hljs-number {
+            color: #d19a66;
+        }
+
+        .hljs-function .hljs-title {
+            color: #61afef;
+        }
+
+        .hljs-variable,
+        .hljs-name {
+            color: #e06c75;
+        }
+
+        /* Example Output */
+        .example-output {
+            background: #1e2528;
+            color: #e5e7eb;
+            border-left: 4px solid var(--green-primary);
+            padding: 1.25rem 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.8;
+            border-radius: 8px;
+        }
+
+        .example-output strong {
+            color: var(--green-accent);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Tables */
+        .flag-table {
+            width: 100%;
+            margin: 1.5rem 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--bg-white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .flag-table th {
+            background: var(--green-dark);
+            color: white;
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .flag-table td {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .flag-table tr:hover {
+            background: var(--bg-main);
+        }
+
+        .flag-name {
+            color: var(--green-dark);
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--green-primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--green-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h1>Lua Engine</h1>
+            <p>API Reference</p>
+        </div>
+
+        <nav>
+            <div class="nav-section">
+                <div class="nav-title">Libraries</div>
+                <ul class="nav-list">
+                    <li><a href="#task">Task Library</a></li>
+                    <li><a href="#filesystem">Filesystem</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title">Process & Memory</div>
+                <ul class="nav-list">
+                    <li><a href="#process">Process Management</a></li>
+                    <li><a href="#memory">Memory API</a></li>
+                    <li><a href="#winapi">WinAPI Constants</a></li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header>
+            <h1>Lua Engine Documentation</h1>
+            <p class="subtitle">Complete API reference for Lua scripting framework</p>
+        </header>
+
+        <main>
+            <!-- Task Library -->
+            <section id="task">
+                <h2>Task Library</h2>
+                <p>The Task library provides Roblox-like functionality for managing asynchronous operations, scheduling, and threading in your Lua scripts. This powerful library enables you to control timing, defer execution, and manage concurrent operations with precision.</p>
+
+                <div class="api-card">
+                    <h3>task.wait</h3>
+                    <div class="function-signature">task.wait(duration: number?) → number</div>
+                    <p>Pauses the current thread for the specified duration in seconds. If no duration is provided, yields the thread until the next frame or resumption point. Returns the actual time elapsed, which may be slightly different from the requested duration due to system scheduling.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">duration</span> <span class="param-type">(number, optional)</span> - Time to wait in seconds. If omitted, waits for one frame.
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> The actual elapsed time in seconds
+                    </div>
+
+                    <pre><code class="language-lua">-- Wait for 2 seconds
+local elapsed = task.wait(2)
+print("Waited for", elapsed, "seconds")
+
+-- Wait for next frame
+task.wait()</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>task.spawn</h3>
+                    <div class="function-signature">task.spawn(callback: function, ...: any) → thread</div>
+                    <p>Immediately executes the provided function in a new thread without yielding the current thread. Unlike <code>task.defer</code>, this runs instantly on the current frame. The spawned thread runs independently and any errors are caught and reported without affecting the parent thread.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">callback</span> <span class="param-type">(function)</span> - The function to execute in a new thread
+                        </div>
+                        <div class="param">
+                            <span class="param-name">...</span> <span class="param-type">(any)</span> - Optional arguments to pass to the callback function
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> The created thread object
+                    </div>
+
+                    <pre><code class="language-lua">task.spawn(function(name, count)
+    for i = 1, count do
+        print("Hello", name, i)
+        task.wait(1)
+    end
+end, "World", 3)</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>task.defer</h3>
+                    <div class="function-signature">task.defer(callback: function, ...: any) → thread</div>
+                    <p>Schedules a function to run in a new thread on the next resumption cycle (deferred execution). Unlike <code>task.spawn</code>, the function doesn't execute immediately but waits until the next opportunity. This is useful for breaking up long-running operations or ensuring certain code runs after the current execution context completes.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">callback</span> <span class="param-type">(function)</span> - The function to execute later
+                        </div>
+                        <div class="param">
+                            <span class="param-name">...</span> <span class="param-type">(any)</span> - Optional arguments to pass to the callback
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> The created thread object
+                    </div>
+
+                    <pre><code class="language-lua">print("1: Before defer")
+task.defer(function()
+    print("3: Deferred execution")
+end)
+print("2: After defer")</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>task.delay</h3>
+                    <div class="function-signature">task.delay(duration: number, callback: function, ...: any) → thread</div>
+                    <p>Schedules a function to execute after a specified delay in seconds. The function runs in a new thread after the delay period. This is perfect for implementing timers, cooldowns, or delayed responses in your scripts.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">duration</span> <span class="param-type">(number)</span> - Time to wait before execution (in seconds)
+                        </div>
+                        <div class="param">
+                            <span class="param-name">callback</span> <span class="param-type">(function)</span> - The function to execute after the delay
+                        </div>
+                        <div class="param">
+                            <span class="param-name">...</span> <span class="param-type">(any)</span> - Optional arguments to pass to the callback
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> The created thread object
+                    </div>
+
+                    <pre><code class="language-lua">print("Starting timer...")
+task.delay(3, function(message)
+    print("Timer finished:", message)
+end, "Hello after 3 seconds!")</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>task.cancel</h3>
+                    <div class="function-signature">task.cancel(thread: thread) → void</div>
+                    <p>Cancels a running or scheduled thread created by task.spawn, task.defer, or task.delay. Once cancelled, the thread will not resume and any pending operations will be abandoned. This is essential for cleanup and preventing unwanted code execution.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">thread</span> <span class="param-type">(thread)</span> - The thread object to cancel
+                        </div>
+                    </div>
+
+                    <pre><code class="language-lua">local myThread = task.spawn(function()
+    while true do
+        print("Running...")
+        task.wait(1)
+    end
+end)
+
+task.wait(3)
+task.cancel(myThread)
+print("Thread cancelled")</code></pre>
+                </div>
+            </section>
+
+            <!-- Filesystem -->
+            <section id="filesystem">
+                <h2>Filesystem API</h2>
+                <p>Complete filesystem operations for reading, writing, and managing files and directories. This API provides comprehensive file handling capabilities optimized for the Lua Engine environment.</p>
+
+                <div class="api-card">
+                    <h3>readfile</h3>
+                    <div class="function-signature">readfile(path: string) → string</div>
+                    <p>Reads the entire contents of a file at the specified path and returns it as a string. The function reads the file in binary-safe mode, preserving all bytes exactly as stored. Throws an error if the file doesn't exist or cannot be read due to permissions.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">path</span> <span class="param-type">(string)</span> - Absolute or relative path to the file to read
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> The complete file contents as a string
+                    </div>
+
+                    <pre><code class="language-lua">local content = readfile("config.txt")
+print("File content:", content)</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>writefile</h3>
+                    <div class="function-signature">writefile(path: string, content: string) → void</div>
+                    <p>Writes content to a file at the specified path. If the file exists, it will be completely overwritten. If the file doesn't exist, it will be created. Parent directories must exist; use <code>makefolder</code> to create them first if needed.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">path</span> <span class="param-type">(string)</span> - Path where the file should be written
+                        </div>
+                        <div class="param">
+                            <span class="param-name">content</span> <span class="param-type">(string)</span> - Data to write to the file
+                        </div>
+                    </div>
+
+                    <pre><code class="language-lua">writefile("output.txt", "Hello, World!")
+print("File written successfully")</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>appendfile</h3>
+                    <div class="function-signature">appendfile(path: string, content: string) → void</div>
+                    <p>Appends content to the end of an existing file without overwriting its current contents. If the file doesn't exist, it will be created. This is useful for logging, data accumulation, or building files incrementally.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">path</span> <span class="param-type">(string)</span> - Path to the file to append to
+                        </div>
+                        <div class="param">
+                            <span class="param-name">content</span> <span class="param-type">(string)</span> - Data to append to the file
+                        </div>
+                    </div>
+
+                    <pre><code class="language-lua">appendfile("log.txt", "New log entry\n")
+appendfile("log.txt", "Another entry\n")</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>isfile</h3>
+                    <div class="function-signature">isfile(path: string) → boolean</div>
+                    <p>Checks whether the specified path points to an existing file (not a directory). Returns true only if the path exists and is a regular file.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">path</span> <span class="param-type">(string)</span> - Path to check
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> true if path is a file, false otherwise
+                    </div>
+
+                    <pre><code class="language-lua">if isfile("config.txt") then
+    local content = readfile("config.txt")
+else
+    print("File does not exist")
+end</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>isfolder</h3>
+                    <div class="function-signature">isfolder(path: string) → boolean</div>
+                    <p>Checks whether the specified path points to an existing directory. Returns true only if the path exists and is a directory.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">path</span> <span class="param-type">(string)</span> - Path to check
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> true if path is a directory, false otherwise
+                    </div>
+
+                    <pre><code class="language-lua">if isfolder("data") then
+    print("Directory exists")
+else
+    makefolder("data")
+end</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>makefolder</h3>
+                    <div class="function-signature">makefolder(path: string) → void</div>
+                    <p>Creates a new directory at the specified path. Parent directories must already exist. If the directory already exists, the function does nothing (no error is thrown).</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">path</span> <span class="param-type">(string)</span> - Path of the directory to create
+                        </div>
+                    </div>
+
+                    <pre><code class="language-lua">makefolder("config")
+makefolder("config/profiles")
+writefile("config/profiles/user1.txt", "data")</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>delfolder</h3>
+                    <div class="function-signature">delfolder(path: string) → void</div>
+                    <p>Deletes a directory and all of its contents recursively. This is a destructive operation that removes the directory and everything inside it.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">path</span> <span class="param-type">(string)</span> - Path of the directory to delete
+                        </div>
+                    </div>
+
+                    <div class="warning">
+                        This operation is irreversible and deletes all nested files and subdirectories!
+                    </div>
+
+                    <pre><code class="language-lua">delfolder("temp")
+print("Temporary folder deleted")</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>delfile</h3>
+                    <div class="function-signature">delfile(path: string) → void</div>
+                    <p>Deletes a single file at the specified path. The file is permanently removed from the filesystem.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">path</span> <span class="param-type">(string)</span> - Path of the file to delete
+                        </div>
+                    </div>
+
+                    <pre><code class="language-lua">if isfile("old_data.txt") then
+    delfile("old_data.txt")
+    print("File deleted")
+end</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>listfiles</h3>
+                    <div class="function-signature">listfiles(path: string) → table</div>
+                    <p>Returns a table (array) containing the full paths of all files and directories within the specified directory. Each entry is a complete path string. Does not recurse into subdirectories.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">path</span> <span class="param-type">(string)</span> - Path of the directory to list
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> Table array of file and directory paths
+                    </div>
+
+                    <pre><code class="language-lua">local files = listfiles("config")
+for i, filepath in ipairs(files) do
+    print(i, filepath)
+    if isfile(filepath) then
+        print("  -> File")
+    else
+        print("  -> Directory")
+    end
+end</code></pre>
+                </div>
+            </section>
+
+            <!-- Process Management -->
+            <section id="process">
+                <h2>Process Management</h2>
+                <p>Functions for discovering, opening, and managing Windows processes. These APIs allow you to enumerate running processes and obtain handles for memory operations.</p>
+
+                <div class="api-card">
+                    <h3>getprocessesinfo</h3>
+                    <div class="function-signature">getprocessesinfo(exeName: string) → table</div>
+                    <p>Searches for all running processes matching the specified executable name and returns detailed information about each instance. This is useful when multiple instances of the same program are running.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">exeName</span> <span class="param-type">(string)</span> - Name of the executable to search for (e.g., "Discord.exe", "Notepad.exe")
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> Table array containing process info objects with fields: <code>Name</code>, <code>Pid</code>, <code>Threads</code>
+                    </div>
+
+                    <pre><code class="language-lua">-- Find all Discord processes
+local processes = getprocessesinfo("Discord.exe")
+
+for i, v in pairs(processes) do
+    print(string.format(
+        "[%d] Name: %s | PID: %d | Threads: %d",
+        i, v.Name, v.Pid, v.Threads
+    ))
+end</code></pre>
+
+                    <div class="example-output">
+                        <strong>Output:</strong>
+[1] Name: Discord.exe | PID: 26604 | Threads: 56
+[2] Name: Discord.exe | PID: 36028 | Threads: 7
+[3] Name: Discord.exe | PID: 41356 | Threads: 49
+[4] Name: Discord.exe | PID: 39096 | Threads: 16
+[5] Name: Discord.exe | PID: 34904 | Threads: 60
+[6] Name: Discord.exe | PID: 10672 | Threads: 10
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <h3>openprocess</h3>
+                    <div class="function-signature">openprocess(dwAccess: number, bInherit: boolean, dwPid: number) → userdata | nil</div>
+                    <p>Opens an existing process and returns a handle that can be used for memory operations. The access rights determine what operations you can perform on the process. Use WinAPI constants to specify the access level needed.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">dwAccess</span> <span class="param-type">(number)</span> - Desired access rights (use WinAPI.PROCESS_* constants)
+                        </div>
+                        <div class="param">
+                            <span class="param-name">bInherit</span> <span class="param-type">(boolean)</span> - Whether child processes inherit this handle (usually false)
+                        </div>
+                        <div class="param">
+                            <span class="param-name">dwPid</span> <span class="param-type">(number)</span> - Process ID to open
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> Process handle (userdata) if successful, nil if failed
+                    </div>
+
+                    <pre><code class="language-lua">-- Find and open Notepad process
+local pid = nil
+
+for i, v in pairs(getprocessesinfo("Notepad.exe")) do
+    print(string.format(
+        "[%d] Name: %s | PID: %d | Threads: %d",
+        i, v.Name, v.Pid, v.Threads
+    ))
+    pid = v.Pid
+    break
+end
+
+if pid then
+    local handle = openprocess(
+        WinAPI.PROCESS_VM_READ, 
+        false, 
+        pid
+    )
+    
+    if not handle then
+        print("Failed to open process.")
+        return
+    end
+    
+    print("Process handle:", tostring(handle))
+else
+    print("Process not found")
+end</code></pre>
+
+                    <div class="example-output">
+                        <strong>Output:</strong>
+[1] Name: Notepad.exe | PID: 22144 | Threads: 50
+Process handle: userdata: 0x000001e44f09d2d0
+                    </div>
+                </div>
+            </section>
+
+            <!-- Memory API -->
+            <section id="memory">
+                <h2>Memory API</h2>
+                <p class="warning">This API is currently in testing phase and may contain bugs. Use with caution in production environments.</p>
+
+                <div class="api-card">
+                    <h3>readmemory</h3>
+                    <div class="function-signature">readmemory(handle: userdata, address: number, size: number) → buffer, number</div>
+                    <p>Reads raw memory from a process at the specified memory address. Requires a valid process handle obtained from <code>openprocess</code>.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">handle</span> <span class="param-type">(userdata)</span> - Process handle from openprocess
+                        </div>
+                        <div class="param">
+                            <span class="param-name">address</span> <span class="param-type">(number)</span> - Memory address to read from
+                        </div>
+                        <div class="param">
+                            <span class="param-name">size</span> <span class="param-type">(number)</span> - Number of bytes to read
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> buffer (raw memory data), number (bytes actually read)
+                    </div>
+
+                    <pre><code class="language-lua">local proc = openprocess(WinAPI.PROCESS_VM_READ, false, 1234)
+if proc then
+    local buf, bytes = readmemory(proc, 0x7FF6AABBCCDD, 32)
+    print("Read", bytes, "bytes from memory")
+end</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>writememory</h3>
+                    <div class="function-signature">writememory(handle: userdata, address: number, value: any, size: number?) → boolean, number, string</div>
+                    <p>Writes data to a process's memory at the specified address. Requires a process handle with PROCESS_VM_WRITE permissions.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">handle</span> <span class="param-type">(userdata)</span> - Process handle from openprocess
+                        </div>
+                        <div class="param">
+                            <span class="param-name">address</span> <span class="param-type">(number)</span> - Memory address to write to
+                        </div>
+                        <div class="param">
+                            <span class="param-name">value</span> <span class="param-type">(any)</span> - Data to write (string, number, or buffer)
+                        </div>
+                        <div class="param">
+                            <span class="param-name">size</span> <span class="param-type">(number, optional)</span> - Number of bytes to write
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> success (boolean), bytesWritten (number), errorMessage (string)
+                    </div>
+
+                    <pre><code class="language-lua">local proc = openprocess(WinAPI.PROCESS_VM_WRITE, false, 1234)
+if proc then
+    local success, written, err = writememory(proc, 0x400000, 100, 4)
+    if success then
+        print("Successfully wrote", written, "bytes")
+    else
+        print("Write failed:", err)
+    end
+end</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>virtualprotectex</h3>
+                    <div class="function-signature">virtualprotectex(handle: userdata, address: number, size: number, newProtect: number) → boolean, number, string</div>
+                    <p>Changes the memory protection of a region in another process's address space. This is crucial for modifying executable code or read-only data.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">handle</span> <span class="param-type">(userdata)</span> - Process handle from openprocess
+                        </div>
+                        <div class="param">
+                            <span class="param-name">address</span> <span class="param-type">(number)</span> - Starting address of the memory region
+                        </div>
+                        <div class="param">
+                            <span class="param-name">size</span> <span class="param-type">(number)</span> - Size of the region in bytes
+                        </div>
+                        <div class="param">
+                            <span class="param-name">newProtect</span> <span class="param-type">(number)</span> - New protection flags (use WinAPI constants)
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> success (boolean), oldProtect (number), errorMessage (string)
+                    </div>
+
+                    <pre><code class="language-lua">local proc = openprocess(WinAPI.PROCESS_VM_OPERATION, false, 1234)
+if proc then
+    local success, oldProtect, err = virtualprotectex(
+        proc, 
+        0x400000, 
+        256, 
+        WinAPI.PAGE_EXECUTE_READWRITE
+    )
+    
+    if success then
+        print("Changed protection, old:", oldProtect)
+        -- Perform memory operations...
+        -- Restore old protection
+        virtualprotectex(proc, 0x400000, 256, oldProtect)
+    end
+end</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>getmodulebase</h3>
+                    <div class="function-signature">getmodulebase(pid: number, moduleName: string) → number</div>
+                    <p>Retrieves the base address of a loaded module (DLL or EXE) within a process. Returns 0 if the module is not found.</p>
+                    
+                    <div class="params">
+                        <div class="param">
+                            <span class="param-name">pid</span> <span class="param-type">(number)</span> - Process ID to query
+                        </div>
+                        <div class="param">
+                            <span class="param-name">moduleName</span> <span class="param-type">(string)</span> - Name of the module (e.g., "kernel32.dll", "game.exe")
+                        </div>
+                    </div>
+
+                    <div class="returns">
+                        <strong>Returns:</strong> Base address of the module (number), or 0 if not found
+                    </div>
+
+                    <pre><code class="language-lua">local pid = 1234
+local baseAddr = getmodulebase(pid, "game.exe")
+
+if baseAddr ~= 0 then
+    print(string.format("Game base: 0x%X", baseAddr))
+    
+    -- Calculate actual address from offset
+    local targetAddr = baseAddr + 0x12345
+    print(string.format("Target: 0x%X", targetAddr))
+end</code></pre>
+                </div>
+            </section>
+
+            <!-- WinAPI Constants -->
+            <section id="winapi">
+                <h2>WinAPI Constants</h2>
+                <p>Pre-defined Windows API constants accessible through the global <code>WinAPI</code> table. These constants are essential for working with process and memory operations.</p>
+
+                <h3>Initialization Code</h3>
+                <pre><code class="language-c">lua_newtable(L);
+
+// Process Access Rights
+lua_pushinteger(L, PROCESS_QUERY_INFORMATION); 
+lua_setfield(L, -2, "PROCESS_QUERY_INFORMATION");
+
+lua_pushinteger(L, PROCESS_SUSPEND_RESUME);    
+lua_setfield(L, -2, "PROCESS_SUSPEND_RESUME");
+
+lua_pushinteger(L, PROCESS_VM_READ);           
+lua_setfield(L, -2, "PROCESS_VM_READ");
+
+lua_pushinteger(L, PROCESS_VM_WRITE);          
+lua_setfield(L, -2, "PROCESS_VM_WRITE");
+
+lua_pushinteger(L, PROCESS_VM_OPERATION);      
+lua_setfield(L, -2, "PROCESS_VM_OPERATION");
+
+lua_pushinteger(L, PROCESS_ALL_ACCESS);        
+lua_setfield(L, -2, "PROCESS_ALL_ACCESS");
+
+// Memory Protection Constants
+lua_pushinteger(L, PAGE_NOACCESS);          
+lua_setfield(L, -2, "PAGE_NOACCESS");
+
+lua_pushinteger(L, PAGE_READONLY);          
+lua_setfield(L, -2, "PAGE_READONLY");
+
+lua_pushinteger(L, PAGE_READWRITE);         
+lua_setfield(L, -2, "PAGE_READWRITE");
+
+lua_pushinteger(L, PAGE_EXECUTE_READ);      
+lua_setfield(L, -2, "PAGE_EXECUTE_READ");
+
+lua_pushinteger(L, PAGE_EXECUTE_READWRITE); 
+lua_setfield(L, -2, "PAGE_EXECUTE_READWRITE");
+
+lua_pushinteger(L, PAGE_GUARD);             
+lua_setfield(L, -2, "PAGE_GUARD");
+
+lua_setglobal(L, "WinAPI");</code></pre>
+
+                <h3>Process Access Rights</h3>
+                <p>These constants define what operations you can perform when opening a process. Multiple flags can be combined using bitwise OR operations.</p>
+
+                <table class="flag-table">
+                    <thead>
+                        <tr>
+                            <th>Constant</th>
+                            <th>Description</th>
+                            <th>Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PROCESS_QUERY_INFORMATION</span></td>
+                            <td>Query process information such as exit code and priority</td>
+                            <td>Process inspection and monitoring</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PROCESS_SUSPEND_RESUME</span></td>
+                            <td>Permission to suspend or resume process threads</td>
+                            <td>Process control and debugging</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PROCESS_VM_READ</span></td>
+                            <td>Read from process virtual memory</td>
+                            <td>Memory scanning and analysis</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PROCESS_VM_WRITE</span></td>
+                            <td>Write to process virtual memory</td>
+                            <td>Memory modification and patching</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PROCESS_VM_OPERATION</span></td>
+                            <td>Perform memory operations like VirtualProtectEx</td>
+                            <td>Memory protection changes</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PROCESS_ALL_ACCESS</span></td>
+                            <td>All possible access rights (requires admin)</td>
+                            <td>Full process control</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Memory Protection Constants</h3>
+                <p>These constants are used with <code>virtualprotectex</code> to set memory page protection attributes.</p>
+
+                <table class="flag-table">
+                    <thead>
+                        <tr>
+                            <th>Constant</th>
+                            <th>Description</th>
+                            <th>Common Use Cases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PAGE_NOACCESS</span></td>
+                            <td>Disables all access to memory region</td>
+                            <td>Protecting sensitive data</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PAGE_READONLY</span></td>
+                            <td>Read-only access, write attempts cause violations</td>
+                            <td>Constant data, lookup tables</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PAGE_READWRITE</span></td>
+                            <td>Read and write access, no execution</td>
+                            <td>Data sections, heap memory</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PAGE_EXECUTE_READ</span></td>
+                            <td>Read and execute access, write-protected</td>
+                            <td>Code sections</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PAGE_EXECUTE_READWRITE</span></td>
+                            <td>Read, write, and execute access</td>
+                            <td>Code modification, JIT compilation</td>
+                        </tr>
+                        <tr>
+                            <td><span class="flag-name">WinAPI.PAGE_GUARD</span></td>
+                            <td>Guard page causing one-time exception</td>
+                            <td>Stack overflow detection</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Usage Examples</h3>
+                
+                <div class="api-card">
+                    <h3>Combining Access Flags with Bitwise OR</h3>
+                    <pre><code class="language-lua">-- Combine multiple permissions using bitwise OR
+local access = bit.bor(
+    WinAPI.PROCESS_VM_READ,
+    WinAPI.PROCESS_VM_WRITE,
+    WinAPI.PROCESS_VM_OPERATION
+)
+
+local handle = openprocess(access, false, targetPid)
+
+-- Or use ALL_ACCESS (requires admin privileges)
+local adminHandle = openprocess(
+    WinAPI.PROCESS_ALL_ACCESS,
+    false,
+    targetPid
+)</code></pre>
+                </div>
+
+                <div class="api-card">
+                    <h3>Modifying Protected Memory</h3>
+                    <pre><code class="language-lua">-- Open with VM_OPERATION and VM_WRITE
+local access = bit.bor(
+    WinAPI.PROCESS_VM_OPERATION,
+    WinAPI.PROCESS_VM_WRITE
+)
+
+local handle = openprocess(access, false, targetPid)
+
+if handle then
+    -- Change protection to writable
+    local success, oldProtect = virtualprotectex(
+        handle,
+        codeAddress,
+        64,
+        WinAPI.PAGE_EXECUTE_READWRITE
+    )
+    
+    if success then
+        -- Write new code
+        writememory(handle, codeAddress, patchData, #patchData)
+        
+        -- Restore original protection
+        virtualprotectex(handle, codeAddress, 64, oldProtect)
+        print("Patch applied successfully")
+    end
+end</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Lua Engine Framework Documentation</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize syntax highlighting
+        hljs.highlightAll();
+
+        // Active navigation
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-list a');
+
+        function setActiveNav() {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', setActiveNav);
+        setActiveNav();
+    </script>
+</body>
+</html>
